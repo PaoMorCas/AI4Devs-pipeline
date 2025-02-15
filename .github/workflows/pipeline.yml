@@ -94,11 +94,6 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          echo "EC2 User: ${{ secrets.EC2_USER }}"
-          echo "EC2 IP: ${{ secrets.EC2_INSTANCE_IP }}"
-          ping -c 4 ${{ secrets.EC2_INSTANCE_IP }}
-          echo "Intentando conectar a: ${{ secrets.EC2_USER }}@${{ secrets.EC2_INSTANCE_IP }}"
-          ping -c 4 ${{ secrets.EC2_INSTANCE_IP }}
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_INSTANCE_IP }} "mkdir -p ~/backend"
