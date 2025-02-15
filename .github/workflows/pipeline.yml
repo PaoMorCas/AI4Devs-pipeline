@@ -90,15 +90,25 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          EC2_INSTANCE_IP: '13.59.191.244'
+          EC2_INSTANCE_IP: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_INSTANCE_IP }} "mkdir -p ~/backend"
-          scp -o StrictHostKeyChecking=no -i private_key.pem -r backend/* ${{ secrets.EC2_USER }}@${{ secrets.EC2_INSTANCE_IP }}:~/backend/
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_INSTANCE_IP }} '
+          
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            # Instalar Node.js y PM2 si no están instalados
+            sudo apt update
+            sudo apt install -y nodejs npm
+            sudo npm install -g pm2
+
+            # Crear carpeta de la aplicación y copiar archivos
+            mkdir -p ~/app/backend
+          '
+          scp -o StrictHostKeyChecking=no -i private_key.pem -r backend/* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/backend/
+          
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
             cd ~/backend
             npm ci --production
             npx prisma generate
