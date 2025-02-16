@@ -40,6 +40,12 @@ jobs:
       - name: Build backend
         working-directory: backend
         run: npm run build
+      
+      - name: Save build as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-build
+          path: backend/dist
 
   test:
     runs-on: ubuntu-latest
@@ -85,6 +91,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Restore build from artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-build
+          path: backend/dist
 
       - name: Deploy to EC2
         env:
