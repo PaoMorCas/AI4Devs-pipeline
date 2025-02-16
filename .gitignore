@@ -14,7 +14,8 @@
 
 # production
 **/build
-**/dist
+**/dist/
+!**/dist/.keep
 
 # logs
 npm-debug.log*
